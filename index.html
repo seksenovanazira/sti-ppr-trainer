@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<title>Тренажёр СТИ / ППР / Приёмка кабеля</title>
+<style>
+  :root{
+    --bg:#0f172a;
+    --bg-panel:#ffffff;
+    --bg-app:#f1f5f9;
+    --text:#0f172a;
+    --text-muted:#64748b;
+    --border:#e2e8f0;
+    --primary:#0d6efd;
+    --primary-dark:#0b57d0;
+    --success:#16a34a;
+    --success-bg:#dcfce7;
+    --warning:#d97706;
+    --warning-bg:#fef3c7;
+    --danger:#dc2626;
+    --danger-bg:#fee2e2;
+    --neutral-bg:#e2e8f0;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    background:var(--bg-app);
+    color:var(--text);
+    -webkit-tap-highlight-color: transparent;
+  }
+  header.topbar{
+    background:var(--bg);
+    color:#fff;
+    padding:14px 16px;
+    position:sticky;
+    top:0;
+    z-index:50;
+    box-shadow:0 2px 8px rgba(0,0,0,.15);
+  }
+  header.topbar h1{
+    margin:0;
+    font-size:16px;
+    font-weight:700;
+    letter-spacing:.2px;
+  }
+  header.topbar p{
+    margin:2px 0 0;
+    font-size:12px;
+    color:#94a3b8;
+  }
+  nav.tabs{
+    display:flex;
+    gap:6px;
+    background:var(--bg);
+    padding:0 8px 8px;
+    position:sticky;
+    top:56px;
+    z-index:49;
+    overflow-x:auto;
+  }
+  nav.tabs button{
+    flex:1 1 auto;
+    min-width:110px;
+    border:none;
+    background:#1e293b;
+    color:#cbd5e1;
+    padding:12px 10px;
+    border-radius:10px;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+    transition:background .15s, color .15s;
+    white-space:nowrap;
+  }
+  nav.tabs button.active{
+    background:var(--primary);
+    color:#fff;
+  }
+  main{
+    max-width:960px;
+    margin:0 auto;
+    padding:16px;
+    padding-bottom:60px;
+  }
+  section.view{display:none;}
+  section.view.active{display:block;}
+
+  .card{
+    background:var(--bg-panel);
+    border-radius:var(--radius);
+    border:1px solid var(--border);
+    padding:18px;
+    margin-bottom:14px;
+    box-shadow:0 1px 3px rgba(0,0,0,.04);
+  }
+  .card h2{margin-top:0;font-size:18px;}
+  .card h3{font-size:15px;margin:0 0 8px;}
+
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    border:none;
+    border-radius:12px;
+    padding:14px 18px;
+    font-size:15px;
+    font-weight:700;
+    cursor:pointer;
+    background:var(--primary);
+    color:#fff;
+    transition:filter .1s, transform .05s;
+    min-height:48px;
+  }
+  .btn:hover{filter:brightness(1.05);}
+  .btn:active{transform:scale(.98);}
+  .btn.secondary{background:var(--neutral-bg);color:var(--text);}
+  .btn.success{background:var(--success);}
+  .btn.block{width:100%;}
+  .btn.sm{padding:9px 12px;font-size:13px;min-height:auto;font-weight:600;}
+  .btn:disabled{opacity:.5;cursor:not-allowed;}
+
+  .grid{display:grid;gap:12px;}
+  .grid.cols-2{grid-template-columns:1fr 1fr;}
+  .grid.cols-3{grid-template-columns:repeat(3,1fr);}
+  @media (max-width:640px){
+    .grid.cols-2,.grid.cols-3{grid-template-columns:1fr;}
+  }
+
+  label.field{display:block;font-size:13px;font-weight:600;color:var(--text-muted);margin-bottom:6px;}
+  select, input[type=text]{
+    width:100%;
+    padding:12px;
+    border-radius:10px;
+    border:1px solid var(--border);
+    font-size:15px;
+    background:#fff;
+    color:var(--text);
+  }
+  .field-group{margin-bottom:14px;}
+
+  .chip{
+    display:inline-block;
+    padding:4px 10px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:700;
+  }
+  .chip.success{background:var(--success-bg);color:var(--success);}
+  .chip.warning{background:var(--warning-bg);color:var(--warning);}
+  .chip.danger{background:var(--danger-bg);color:var(--danger);}
+  .chip.neutral{background:var(--neutral-bg);color:var(--text-muted);}
+
+  .progress-outer{
+    width:100%;
+    background:var(--neutral-bg);
+    border-radius:999px;
+    height:10px;
+    overflow:hidden;
+  }
+  .progress-inner{
+    height:100%;
+    background:var(--primary);
+    border-radius:999px;
+    transition:width .25s ease;
+  }
+  .progress-inner.success{background:var(--success);}
+  .progress-inner.warning{background:var(--warning);}
+  .progress-inner.danger{background:var(--danger);}
+
+  .option-btn{
+    display:block;
+    width:100%;
+    text-align:left;
+    padding:14px;
+    border-radius:12px;
+    border:2px solid var(--border);
+    background:#fff;
+    font-size:15px;
+    margin-bottom:10px;
+    cursor:pointer;
+    color:var(--text);
+  }
+  .option-btn.selected{border-color:var(--primary);background:#eff6ff;}
+  .option-btn.correct{border-color:var(--success);background:var(--success-bg);}
+  .option-btn.incorrect{border-color:var(--danger);background:var(--danger-bg);}
+  .option-btn:disabled{cursor:default;}
+
+  .explain-box{
+    margin-top:10px;
+    padding:12px;
+    border-radius:10px;
+    background:#f8fafc;
+    border:1px solid var(--border);
+    font-size:14px;
+    color:var(--text-muted);
+  }
+
+  table.results-table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:14px;
+  }
+  table.results-table th, table.results-table td{
+    text-align:left;
+    padding:10px 8px;
+    border-bottom:1px solid var(--border);
+  }
+  table.results-table th{
+    color:var(--text-muted);
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:.03em;
+  }
+  table.results-table tbody tr{cursor:pointer;}
+  table.results-table tbody tr:hover{background:#f8fafc;}
+
+  .metric-card{
+    background:var(--bg-panel);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:16px;
+    text-align:center;
+  }
+  .metric-card .value{font-size:26px;font-weight:800;}
+  .metric-card .label{font-size:12px;color:var(--text-muted);margin-top:4px;}
+
+  .cat-row{margin-bottom:10px;}
+  .cat-row .cat-head{display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;}
+
+  .scheme-tabs{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
+  .scheme-tabs button{
+    border:1px solid var(--border);
+    background:#fff;
+    padding:8px 12px;
+    border-radius:999px;
+    font-size:13px;
+    cursor:pointer;
+    font-weight:600;
+    color:var(--text-muted);
+  }
+  .scheme-tabs button.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+
+  .scheme-layout{display:grid;grid-template-columns:1fr;gap:16px;}
+  @media (min-width:800px){
+    .scheme-layout.has-detail{grid-template-columns: 1.1fr 1fr;}
+  }
+  .marker-list{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:8px;}
+  .marker-list li button{
+    width:100%;
+    text-align:left;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:10px 12px;
+    cursor:pointer;
+    font-size:13px;
+    color:var(--text);
+  }
+  .marker-list li button.active{border-color:var(--primary);background:#eff6ff;}
+  .marker-num{
+    flex:0 0 auto;
+    width:24px;height:24px;
+    border-radius:50%;
+    background:var(--primary);
+    color:#fff;
+    font-size:12px;
+    font-weight:700;
+    display:flex;align-items:center;justify-content:center;
+  }
+  svg.scheme-svg{width:100%;height:auto;background:#f8fafc;border-radius:12px;border:1px solid var(--border);}
+  svg.scheme-svg circle.marker{cursor:pointer;fill:var(--primary);stroke:#fff;stroke-width:2;}
+  svg.scheme-svg circle.marker.active{fill:#16a34a;}
+  svg.scheme-svg text.marker-text{fill:#fff;font-size:11px;font-weight:700;pointer-events:none;}
+
+  .detail-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:16px;}
+  .detail-card h4{margin:0 0 10px;font-size:16px;}
+  .detail-card .kv{margin-bottom:10px;}
+  .detail-card .kv .k{font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;margin-bottom:3px;}
+  .detail-card .kv .v{font-size:14px;}
+
+  .accordion-item{border:1px solid var(--border);border-radius:12px;margin-bottom:10px;overflow:hidden;}
+  .accordion-head{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:14px;cursor:pointer;background:#fff;font-weight:700;font-size:14px;
+  }
+  .accordion-head .stage-num{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:26px;height:26px;border-radius:50%;background:var(--primary);color:#fff;
+    font-size:13px;margin-right:10px;
+  }
+  .accordion-body{padding:0 14px 14px 50px;font-size:14px;color:var(--text-muted);display:none;}
+  .accordion-item.open .accordion-body{display:block;}
+  .accordion-body ul{margin:8px 0;padding-left:18px;}
+
+  .muted{color:var(--text-muted);font-size:13px;}
+  .flex-between{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;}
+  .hidden{display:none !important;}
+  .mt8{margin-top:8px;}
+  .mt16{margin-top:16px;}
+  footer.app-footer{
+    text-align:center;
+    font-size:12px;
+    color:var(--text-muted);
+    padding:20px;
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <h1>Тренажёр: СТИ · ППР · Приёмка кабеля</h1>
+  <p>АО «Казахтелеком» · офлайн-версия для обучения и аттестации</p>
+</header>
+
+<nav class="tabs">
+  <button class="tab-btn active" data-view="quiz">Квиз-тренажёр</button>
+  <button class="tab-btn" data-view="scheme">Схема осмотра</button>
+  <button class="tab-btn" data-view="admin">Админ-панель</button>
+</nav>
+
+<main>
+
+  <!-- ============ QUIZ VIEW ============ -->
+  <section id="view-quiz" class="view active">
+
+    <!-- Setup screen -->
+    <div id="quiz-setup" class="card">
+      <h2>Настройка теста</h2>
+      <div class="grid cols-2">
+        <div class="field-group">
+          <label class="field">ФИО (необязательно)</label>
+          <input type="text" id="setup-name" placeholder="Например: Иванов Иван">
+        </div>
+        <div class="field-group">
+          <label class="field">Должность (необязательно)</label>
+          <input type="text" id="setup-role" placeholder="Например: Монтажник СТИ">
+        </div>
+      </div>
+      <div class="grid cols-3">
+        <div class="field-group">
+          <label class="field">Категория</label>
+          <select id="setup-category">
+            <option value="all">Все категории</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field">Сложность</label>
+          <select id="setup-difficulty">
+            <option value="all">Любая</option>
+            <option value="базовый">Базовый</option>
+            <option value="продвинутый">Продвинутый</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field">Количество вопросов</label>
+          <select id="setup-count">
+            <option value="5">5</option>
+            <option value="10" selected>10</option>
+            <option value="15">15</option>
+            <option value="9999">Все доступные</option>
+          </select>
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field">Режим</label>
+        <div class="grid cols-2">
+          <button type="button" class="btn secondary mode-btn active" data-mode="training">Тренировка (с подсказками)</button>
+          <button type="button" class="btn secondary mode-btn" data-mode="exam">Экзамен (результат в конце)</button>
+        </div>
+      </div>
+      <button class="btn block success" id="start-quiz-btn">Начать тест</button>
+      <p class="muted mt8" id="setup-info"></p>
+    </div>
+
+    <!-- Running quiz screen -->
+    <div id="quiz-running" class="card hidden">
+      <div class="flex-between">
+        <span class="muted" id="quiz-progress-label">Вопрос 1 из 10</span>
+        <span class="muted" id="quiz-score-label">✔ 0  ✘ 0</span>
+      </div>
+      <div class="progress-outer mt8">
+        <div class="progress-inner" id="quiz-progress-bar" style="width:0%"></div>
+      </div>
+      <div class="mt16">
+        <span class="chip neutral" id="quiz-cat-chip"></span>
+        <span class="chip neutral" id="quiz-diff-chip"></span>
+      </div>
+      <h3 class="mt16" id="quiz-question-text"></h3>
+      <div id="quiz-options"></div>
+      <div id="quiz-explain" class="explain-box hidden"></div>
+      <button class="btn block mt16" id="quiz-next-btn">Ответить</button>
+    </div>
+
+    <!-- Results screen -->
+    <div id="quiz-results" class="card hidden">
+      <h2>Результат теста</h2>
+      <div class="grid cols-3">
+        <div class="metric-card">
+          <div class="value" id="res-overall">0%</div>
+          <div class="label">Итоговый результат</div>
+        </div>
+        <div class="metric-card">
+          <div class="value" id="res-status">—</div>
+          <div class="label">Статус</div>
+        </div>
+        <div class="metric-card">
+          <div class="value" id="res-correct">0/0</div>
+          <div class="label">Верных ответов</div>
+        </div>
+      </div>
+      <h3 class="mt16">По категориям</h3>
+      <div id="res-categories"></div>
+      <h3 class="mt16">Разбор ошибок</h3>
+      <div id="res-mistakes"></div>
+      <button class="btn block mt16" id="res-restart-btn">Пройти ещё раз</button>
+    </div>
+
+  </section>
+
+  <!-- ============ SCHEME VIEW ============ -->
+  <section id="view-scheme" class="view">
+    <div class="card">
+      <h2>Схема осмотра объектов</h2>
+      <p class="muted">Выберите объект и кликните по маркеру на схеме (или по пункту в списке), чтобы увидеть, что нужно проверять.</p>
+      <div class="scheme-tabs" id="scheme-object-tabs"></div>
+      <div id="scheme-content"></div>
+    </div>
+  </section>
+
+  <!-- ============ ADMIN VIEW ============ -->
+  <section id="view-admin" class="view">
+    <div class="card">
+      <h2>Админ-панель: результаты тестирования</h2>
+      <div class="grid cols-3" id="admin-metrics"></div>
+    </div>
+    <div class="card">
+      <div class="flex-between">
+        <h3 style="margin:0;">Сотрудники</h3>
+        <button class="btn sm secondary" id="admin-export-btn">Экспорт в CSV</button>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="results-table" id="admin-table">
+          <thead>
+            <tr>
+              <th>ФИО</th>
+              <th>Должность</th>
+              <th>Дата</th>
+              <th>Результат</th>
+              <th>Статус</th>
+            </tr>
+          </thead>
+          <tbody id="admin-table-body"></tbody>
+        </table>
+      </div>
+      <p class="muted mt8">Результаты, пройденные на этом устройстве, сохраняются автоматически и добавляются к демо-данным. Кликните по строке, чтобы увидеть разбивку по категориям.</p>
+    </div>
+    <div class="card hidden" id="admin-detail-card">
+      <h3 id="admin-detail-name">—</h3>
+      <div id="admin-detail-body"></div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="app-footer">Работает полностью офлайн · данные хранятся только в этом браузере (localStorage)</footer>
+
+<script>
+(function(){
+"use strict";
+
+/* ======================= DATA: QUESTION BANK ======================= */
+const QUESTION_BANK = [
+  // ---- ППР ----
+  {id:"q001",category:"ППР",difficulty:"базовый",type:"single",
+   question:"Что означает аббревиатура ППР?",
+   options:["Планово-предупредительный ремонт","Порядок производства работ","Проверка производственных рисков","Программа повышения ремонтопригодности"],
+   correctAnswers:[0],
+   explanation:"ППР — планово-предупредительный ремонт: система регулярного обслуживания оборудования и сооружений для предупреждения отказов."},
+  {id:"q002",category:"ППР",difficulty:"базовый",type:"single",
+   question:"Какова основная цель проведения ППР?",
+   options:["Устранение уже возникших аварий","Предупреждение отказов оборудования за счёт регулярного обслуживания","Списание устаревшего оборудования","Обучение персонала"],
+   correctAnswers:[1],
+   explanation:"ППР направлен на предупреждение отказов, а не на устранение уже случившихся аварий (это задача аварийно-восстановительных работ)."},
+  {id:"q003",category:"ППР",difficulty:"базовый",type:"truefalse",
+   question:"ППР проводится только после отказа оборудования.",
+   options:["Верно","Неверно"],
+   correctAnswers:[1],
+   explanation:"Неверно: ППР — это плановые профилактические мероприятия, выполняемые по графику, а не только после отказа."},
+  {id:"q004",category:"ППР",difficulty:"продвинутый",type:"multiple",
+   question:"Какие виды работ входят в систему ППР?",
+   options:["Технический осмотр","Текущий ремонт","Капитальный ремонт","Демонтаж оборудования"],
+   correctAnswers:[0,1,2],
+   explanation:"Система ППР включает технические осмотры, текущий и капитальный ремонт. Демонтаж оборудования не является частью ППР."},
+  {id:"q005",category:"ППР",difficulty:"продвинутый",type:"single",
+   question:"Чем определяется периодичность технического осмотра линии связи?",
+   options:["Личным решением монтажника","Графиком ППР, утверждённым регламентом","Только погодными условиями","Требованием клиента"],
+   correctAnswers:[1],
+   explanation:"Периодичность осмотров определяется утверждённым графиком ППР согласно внутреннему регламенту (п. регламента ППР — уточнить номер)."},
+  {id:"q006",category:"ППР",difficulty:"базовый",type:"single",
+   question:"Кто утверждает график проведения ППР на участке?",
+   options:["Рядовой монтажник","Руководитель участка в соответствии с регламентом","Подрядчик","Диспетчер аварийной службы"],
+   correctAnswers:[1],
+   explanation:"График ППР утверждается руководителем участка на основании внутреннего регламента компании."},
+
+  // ---- СТИ ----
+  {id:"q101",category:"СТИ",difficulty:"базовый",type:"single",
+   question:"Как расшифровывается СТИ в контексте данного тренажёра?",
+   options:["Сооружения технической инфраструктуры","Система телефонной идентификации","Служба технического информирования","Стандарт телекоммуникационной интеграции"],
+   correctAnswers:[0],
+   explanation:"СТИ — сооружения технической инфраструктуры: колодцы, шкафы, кроссы, опоры и т.д."},
+  {id:"q102",category:"СТИ",difficulty:"базовый",type:"multiple",
+   question:"Какие из перечисленного относятся к объектам СТИ?",
+   options:["Кабельная канализация","Опоры воздушных линий связи","Кабельные шкафы","Складское помещение офиса продаж"],
+   correctAnswers:[0,1,2],
+   explanation:"Складское помещение офиса продаж не относится к сооружениям технической инфраструктуры связи."},
+  {id:"q103",category:"СТИ",difficulty:"продвинутый",type:"single",
+   question:"Какой из перечисленных признаков указывает на неисправность смотрового колодца?",
+   options:["Свежая покраска люка","Наличие воды и следов затопления","Новая бирка с номером","Чистая горловина колодца"],
+   correctAnswers:[1],
+   explanation:"Наличие воды и следов затопления в колодце — явный признак нарушения гидроизоляции/дренажа и потенциальная угроза для кабеля и муфт."},
+  {id:"q104",category:"СТИ",difficulty:"базовый",type:"truefalse",
+   question:"Провисание кабеля воздушной линии ниже нормативного значения является дефектом.",
+   options:["Верно","Неверно"],
+   correctAnswers:[0],
+   explanation:"Верно: недостаточный провис создаёт риск обрыва при температурных изменениях и представляет опасность (например, для транспорта)."},
+  {id:"q105",category:"СТИ",difficulty:"базовый",type:"single",
+   question:"Что нужно проверить в первую очередь перед спуском в смотровой колодец?",
+   options:["Наличие инструмента","Загазованность воздуха газоанализатором","Погодные условия","Список сотрудников участка"],
+   correctAnswers:[1],
+   explanation:"Перед спуском в колодец обязательна проверка загазованности — это требование охраны труда, предотвращающее отравление и взрыв газа."},
+  {id:"q106",category:"СТИ",difficulty:"продвинутый",type:"single",
+   question:"К чему приводит загрязнение торца оптического разъёма в кроссе?",
+   options:["К улучшению сигнала","К повышенному затуханию сигнала","Никак не влияет на работу линии","К автоматической очистке при подключении"],
+   correctAnswers:[1],
+   explanation:"Загрязнение торца оптического разъёма увеличивает затухание и может приводить к деградации или полной потере сигнала."},
+
+  // ---- Приёмка кабеля ----
+  {id:"q201",category:"Приёмка кабеля",difficulty:"базовый",type:"single",
+   question:"Какой этап приёмки кабельной линии от подрядчика идёт первым?",
+   options:["Измерения","Проверка документации","Подписание акта приёмки","Визуальный осмотр трассы"],
+   correctAnswers:[1],
+   explanation:"Процесс приёмки начинается с проверки документации (исполнительная схема, паспорт линии, сертификаты), затем — визуальный осмотр, измерения и акт."},
+  {id:"q202",category:"Приёмка кабеля",difficulty:"продвинутый",type:"multiple",
+   question:"Какие измерения могут выполняться при приёмке кабельной линии?",
+   options:["Рефлектометрия / затухание (для ВОЛС)","Сопротивление изоляции жил (для медных линий)","Взвешивание барабана с кабелем","Измерение температуры воздуха на трассе"],
+   correctAnswers:[0,1],
+   explanation:"При приёмке выполняются технические измерения, подтверждающие качество линии: рефлектометрия для оптики, сопротивление изоляции для меди."},
+  {id:"q203",category:"Приёмка кабеля",difficulty:"базовый",type:"single",
+   question:"Какой документ оформляется по итогам приёмки линии?",
+   options:["Гарантийный талон","Акт приёмки линии в эксплуатацию","Товарная накладная","Служебная записка"],
+   correctAnswers:[1],
+   explanation:"Итоговым документом приёмки является акт приёмки линии в эксплуатацию (и акт на скрытые работы для муфт/вводов)."},
+  {id:"q204",category:"Приёмка кабеля",difficulty:"продвинутый",type:"truefalse",
+   question:"Приёмка линии возможна без проверки соответствия фактической трассы проектной документации.",
+   options:["Верно","Неверно"],
+   correctAnswers:[1],
+   explanation:"Неверно: обязательный этап приёмки — визуальный осмотр трассы на соответствие проекту (глубина заложения, повреждения оболочки и т.д.)."},
+  {id:"q205",category:"Приёмка кабеля",difficulty:"базовый",type:"single",
+   question:"Что проверяется на этапе «Вводы и муфты» при приёмке линии?",
+   options:["Цвет наружной оболочки кабеля","Герметичность вводов и качество монтажа муфт","Стоимость использованных материалов","Название организации-подрядчика"],
+   correctAnswers:[1],
+   explanation:"На этапе «Вводы и муфты» проверяется качество монтажа муфт и герметичность вводов кабеля в здания, колодцы и шкафы."},
+  {id:"q206",category:"Приёмка кабеля",difficulty:"продвинутый",type:"single",
+   question:"Что происходит, если при измерениях затухание линии превышает нормативное значение?",
+   options:["Линия принимается без замечаний","Линия не принимается до устранения причины превышения","Линия принимается с формулировкой «на усмотрение»","Линия автоматически бракуется без права пересмотра"],
+   correctAnswers:[1],
+   explanation:"При превышении нормативного затухания линия не принимается — подрядчик обязан устранить причину (например, некачественную сварку) и повторить измерения."},
+
+  // ---- Охрана труда ----
+  {id:"q301",category:"Охрана труда",difficulty:"базовый",type:"single",
+   question:"Что необходимо сделать перед началом работ в колодце кабельной канализации?",
+   options:["Сразу начать работу","Проверить загазованность и оформить наряд-допуск","Позвонить руководителю после окончания работ","Ничего дополнительно не требуется"],
+   correctAnswers:[1],
+   explanation:"Перед началом работ в колодце обязательны проверка загазованности и оформление наряда-допуска на работы повышенной опасности."},
+  {id:"q302",category:"Охрана труда",difficulty:"базовый",type:"multiple",
+   question:"Какие средства индивидуальной защиты (СИЗ) могут потребоваться при работе в колодце?",
+   options:["Каска","Страховочная привязь (при необходимости)","Газоанализатор (средство контроля среды)","Пляжные тапочки"],
+   correctAnswers:[0,1,2],
+   explanation:"Каска, страховочная привязь и газоанализатор — типовые средства защиты и контроля при работах в колодцах. Пляжная обувь недопустима."},
+  {id:"q303",category:"Охрана труда",difficulty:"продвинутый",type:"single",
+   question:"Что требуется для проведения работ на высоте (например, на опоре ВЛС)?",
+   options:["Только устное разрешение коллеги","Наряд-допуск и использование средств защиты от падения","Присутствие зрителей","Работа в одиночку без страховки"],
+   correctAnswers:[1],
+   explanation:"Работы на высоте относятся к работам повышенной опасности и требуют наряда-допуска и средств защиты от падения."},
+  {id:"q304",category:"Охрана труда",difficulty:"базовый",type:"truefalse",
+   question:"Работать в одиночку в колодце кабельной канализации разрешается без ограничений.",
+   options:["Верно","Неверно"],
+   correctAnswers:[1],
+   explanation:"Неверно: работы в колодцах, как правило, выполняются бригадой (не менее двух человек), один из которых остаётся наверху для наблюдения и помощи."},
+  {id:"q305",category:"Охрана труда",difficulty:"базовый",type:"single",
+   question:"Какое действие правильно при обнаружении загазованности колодца?",
+   options:["Спуститься и проветрить рукой","Прекратить работы и организовать принудительную вентиляцию","Работать в противогазе без дополнительных мер","Игнорировать показания прибора"],
+   correctAnswers:[1],
+   explanation:"При обнаружении загазованности работы приостанавливаются, организуется принудительная вентиляция и повторный контроль среды."},
+  {id:"q306",category:"Охрана труда",difficulty:"продвинутый",type:"single",
+   question:"Кто несёт ответственность за допуск бригады к работам повышенной опасности?",
+   options:["Любой сотрудник по своему усмотрению","Ответственный руководитель работ, выдавший наряд-допуск","Водитель служебного транспорта","Ответственных лиц не предусмотрено"],
+   correctAnswers:[1],
+   explanation:"Ответственность несёт лицо, выдавшее (утвердившее) наряд-допуск, и ответственный руководитель работ на месте."}
+];
+
+const CATEGORIES = ["ППР","СТИ","Приёмка кабеля","Охрана труда"];
+
+/* ======================= DATA: SCHEME OBJECTS ======================= */
+const SCHEME_OBJECTS = [
+  {
+    id:"well",
+    title:"Смотровой колодец / камера кабельной канализации",
+    type:"svg",
+    svgViewBox:"0 0 400 300",
+    svgBody:`
+      <rect x="60" y="60" width="280" height="180" rx="8" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+      <rect x="140" y="30" width="120" height="40" rx="6" fill="#cbd5e1" stroke="#64748b" stroke-width="2"/>
+      <line x1="90" y1="90" x2="90" y2="210" stroke="#94a3b8" stroke-width="3"/>
+      <line x1="310" y1="90" x2="310" y2="210" stroke="#94a3b8" stroke-width="3"/>
+      <rect x="150" y="150" width="100" height="20" rx="4" fill="#fbbf24" stroke="#b45309" stroke-width="1.5"/>
+    `,
+    markers:[
+      {x:200,y:50,label:"Люк (крышка колодца)",check:"Целостность крышки, отсутствие трещин, надёжность запирающего механизма.",defect:"Люк не закрывается, сломан запорный механизм, крышка треснута.",norm:"п. 3.1 Регламента эксплуатации ККС (уточнить номер)"},
+      {x:90,y:90,label:"Горловина колодца",check:"Отсутствие сколов бетона, целостность ходовых скоб/ступеней.",defect:"Разрушение бетона горловины, отсутствие или поломка ходовых скоб.",norm:"п. 3.2 Регламента эксплуатации ККС (уточнить)"},
+      {x:310,y:90,label:"Кабельные полки / консоли",check:"Надёжность крепления кабеля, отсутствие провисания и коррозии.",defect:"Кабель провисает, консоль проржавела или оторвана от стены.",norm:"п. 3.3 Регламента эксплуатации ККС (уточнить)"},
+      {x:200,y:160,label:"Муфты в колодце",check:"Целостность корпуса муфты, отсутствие следов затопления и коррозии.",defect:"Трещина в корпусе муфты, следы коррозии, попадание влаги внутрь.",norm:"п. 4.1 Инструкции по монтажу муфт (уточнить)"},
+      {x:120,y:210,label:"Гидроизоляция / дренаж",check:"Наличие воды в колодце, исправность дренажных отверстий.",defect:"Колодец затоплен, дренажные отверстия засорены.",norm:"п. 3.4 Регламента эксплуатации ККС (уточнить)"},
+      {x:280,y:210,label:"Маркировка",check:"Наличие читаемой бирки с номером колодца и трассы.",defect:"Бирка отсутствует, повреждена или нечитаема.",norm:"п. 5.1 Инструкции по маркировке сооружений (уточнить)"},
+      {x:200,y:230,label:"Вентиляция / загазованность",check:"Проверка загазованности газоанализатором перед спуском персонала.",defect:"Повышенная концентрация газа — спуск запрещён до проветривания.",norm:"Инструкция по ОТ при работах в колодцах (уточнить)"}
+    ]
+  },
+  {
+    id:"cabinet",
+    title:"Кабельный шкаф",
+    type:"svg",
+    svgViewBox:"0 0 300 340",
+    svgBody:`
+      <rect x="60" y="30" width="180" height="280" rx="10" fill="#e2e8f0" stroke="#64748b" stroke-width="2"/>
+      <rect x="75" y="45" width="150" height="250" rx="6" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+      <line x1="150" y1="45" x2="150" y2="295" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="4 4"/>
+    `,
+    markers:[
+      {x:150,y:60,label:"Корпус и дверь шкафа",check:"Целостность корпуса, отсутствие вмятин и следов вскрытия, исправность замка.",defect:"Сломан замок, дверь не закрывается, следы взлома.",norm:"п. 2.1 Инструкции по эксплуатации кабельных шкафов (уточнить)"},
+      {x:90,y:120,label:"Заземление",check:"Наличие и целостность заземляющего проводника, надёжность соединения.",defect:"Обрыв заземления, отсутствие видимого контура заземления.",norm:"ПУЭ / внутренний регламент по заземлению (уточнить)"},
+      {x:210,y:120,label:"Кроссировка (плинты)",check:"Соответствие кроссировки схеме, отсутствие обрывов и окисления пар.",defect:"Перепутанная кроссировка, окисленные или обрывные пары.",norm:"п. 2.3 Инструкции по эксплуатации кабельных шкафов (уточнить)"},
+      {x:90,y:190,label:"Кабельные вводы",check:"Герметичность вводов кабеля в шкаф, отсутствие следов влаги.",defect:"Негерметичный ввод, попадание влаги внутрь шкафа.",norm:"п. 2.4 Инструкции по эксплуатации кабельных шкафов (уточнить)"},
+      {x:210,y:190,label:"Разрядники / УЗИП",check:"Наличие и исправность устройств защиты от импульсных перенапряжений.",defect:"Отсутствие разрядников, видимые следы электрического пробоя.",norm:"п. 2.5 Инструкции по грозозащите (уточнить)"},
+      {x:150,y:250,label:"Маркировка шкафа",check:"Наличие номера шкафа и соответствие исполнительной схеме.",defect:"Отсутствует табличка с номером шкафа.",norm:"п. 5.1 Инструкции по маркировке сооружений (уточнить)"},
+      {x:150,y:280,label:"Внутренняя чистота",check:"Отсутствие пыли, влаги, посторонних предметов и следов грызунов.",defect:"Следы грызунов, влага, коррозия контактов внутри шкафа.",norm:"п. 2.6 Инструкции по эксплуатации кабельных шкафов (уточнить)"}
+    ]
+  },
+  {
+    id:"cross",
+    title:"Кросс / оптический кросс",
+    type:"svg",
+    svgViewBox:"0 0 300 320",
+    svgBody:`
+      <rect x="70" y="20" width="160" height="280" rx="8" fill="#e2e8f0" stroke="#64748b" stroke-width="2"/>
+      <rect x="85" y="40" width="130" height="40" rx="4" fill="#fff" stroke="#cbd5e1" stroke-width="1.5"/>
+      <rect x="85" y="90" width="130" height="40" rx="4" fill="#fff" stroke="#cbd5e1" stroke-width="1.5"/>
+      <rect x="85" y="140" width="130" height="40" rx="4" fill="#fff" stroke="#cbd5e1" stroke-width="1.5"/>
+      <rect x="85" y="190" width="130" height="40" rx="4" fill="#fff" stroke="#cbd5e1" stroke-width="1.5"/>
+    `,
+    markers:[
+      {x:150,y:25,label:"Стойка / шкаф кросса",check:"Устойчивость и надёжность крепления стойки к полу/стене.",defect:"Стойка шатается, не закреплена анкерами.",norm:"п. 6.1 Инструкции по монтажу кроссового оборудования (уточнить)"},
+      {x:150,y:60,label:"Патч-панели",check:"Читаемая маркировка портов, наличие заглушек на неиспользуемых портах.",defect:"Отсутствуют заглушки, порты загрязнены пылью.",norm:"п. 6.2 Инструкции по эксплуатации кроссов (уточнить)"},
+      {x:150,y:110,label:"Оптические разъёмы / адаптеры",check:"Чистота торцов коннекторов, отсутствие видимых загрязнений.",defect:"Загрязнён коннектор, повышенное затухание при измерении.",norm:"п. 6.3 Инструкции по эксплуатации оптических кроссов (уточнить)"},
+      {x:150,y:160,label:"Кассеты сплайсов",check:"Укладка волокна без превышения минимального радиуса изгиба, целостность гильз КДЗС.",defect:"Радиус изгиба волокна меньше нормы, повреждённая гильза сварного соединения.",norm:"п. 6.4 Инструкции по монтажу ВОЛС (уточнить)"},
+      {x:150,y:210,label:"Организация патч-кордов",check:"Отсутствие натяжения и перегибов, аккуратная укладка в кабель-органайзерах.",defect:"Пережатые или перекрученные патч-корды, отсутствие органайзера.",norm:"п. 6.5 Инструкции по эксплуатации кроссов (уточнить)"},
+      {x:150,y:250,label:"Маркировка направлений",check:"Соответствие бирок направлениям и исполнительной схеме.",defect:"Бирки отсутствуют или не читаемы.",norm:"п. 5.1 Инструкции по маркировке сооружений (уточнить)"},
+      {x:150,y:280,label:"Измерительные протоколы",check:"Наличие актуальных протоколов измерений (рефлектограмм) по направлению.",defect:"Протоколы измерений отсутствуют или устарели.",norm:"п. 7.2 Регламента приёмо-сдаточных измерений (уточнить)"}
+    ]
+  },
+  {
+    id:"pole",
+    title:"Опора воздушной линии связи",
+    type:"svg",
+    svgViewBox:"0 0 300 340",
+    svgBody:`
+      <line x1="150" y1="30" x2="150" y2="310" stroke="#8d6e63" stroke-width="14" stroke-linecap="round"/>
+      <line x1="90" y1="70" x2="210" y2="70" stroke="#64748b" stroke-width="6" stroke-linecap="round"/>
+      <line x1="60" y1="140" x2="240" y2="140" stroke="#94a3b8" stroke-width="2"/>
+    `,
+    markers:[
+      {x:150,y:50,label:"Ствол опоры",check:"Отсутствие наклона, трещин, следов гнили у основания (для деревянных опор).",defect:"Наклон опоры превышает норму, гниль или коррозия у основания.",norm:"п. 8.1 Инструкции по эксплуатации ВЛС (уточнить)"},
+      {x:90,y:70,label:"Крепление кабеля / троса",check:"Надёжность крюков и кронштейнов, отсутствие коррозии крепежа.",defect:"Коррозия крепежа, ослабленное натяжение крепления.",norm:"п. 8.2 Инструкции по эксплуатации ВЛС (уточнить)"},
+      {x:210,y:70,label:"Провис кабеля / провода",check:"Соответствие фактического провиса нормативным значениям для пролёта.",defect:"Провис ниже нормы — риск задевания транспорта или иных объектов.",norm:"п. 8.3 Инструкции по эксплуатации ВЛС (уточнить)"},
+      {x:150,y:140,label:"Заземление опоры",check:"Наличие и целостность контура заземления (для опор с оборудованием).",defect:"Обрыв заземляющего спуска, отсутствие контакта с землёй.",norm:"ПУЭ / внутренний регламент по заземлению (уточнить)"},
+      {x:60,y:140,label:"Молниезащита",check:"Наличие разрядников или грозотроса на опасных пересечениях.",defect:"Отсутствие молниезащиты на пролёте повышенной опасности.",norm:"п. 8.4 Инструкции по грозозащите ВЛС (уточнить)"},
+      {x:150,y:220,label:"Охранная маркировка",check:"Наличие номера опоры и предупреждающих знаков.",defect:"Отсутствует нумерация или знаки на опоре.",norm:"п. 5.1 Инструкции по маркировке сооружений (уточнить)"},
+      {x:150,y:280,label:"Габариты пересечений",check:"Соблюдение нормативных расстояний при пересечении с дорогами и ЛЭП.",defect:"Недостаточный габарит до проезжей части или иных коммуникаций.",norm:"п. 8.5 Инструкции по эксплуатации ВЛС (уточнить)"}
+    ]
+  },
+  {
+    id:"acceptance",
+    title:"Приёмка кабельной линии от подрядчика",
+    type:"stages",
+    stages:[
+      {title:"Документация",
+       body:["Проверка исполнительной схемы трассы","Наличие паспорта линии","Сертификаты на кабель и монтажные материалы","Соответствие проекту и техническим условиям"],
+       criterion:"Критерий приёмки: полный комплект документов в наличии и соответствует факту (уточнить перечень по регламенту)."},
+      {title:"Визуальный осмотр трассы",
+       body:["Соответствие фактической трассы проектной документации","Глубина заложения кабеля","Отсутствие механических повреждений оболочки","Наличие предупредительной ленты (для подземных линий)"],
+       criterion:"Критерий приёмки: трасса соответствует проекту, повреждения отсутствуют (уточнить нормативный документ)."},
+      {title:"Вводы и муфты",
+       body:["Качество монтажа муфт (сварка/КДЗС для оптики, гильзы для меди)","Герметичность вводов кабеля в здания, колодцы, шкафы","Соответствие типа муфты условиям применения"],
+       criterion:"Критерий приёмки: муфты и вводы герметичны, монтаж выполнен по инструкции производителя (уточнить)."},
+      {title:"Измерения",
+       body:["Оптическая рефлектометрия — затухание и отсутствие отражений (для ВОЛС)","Измерение сопротивления изоляции и жил (для медных линий)","Сверка результатов с нормативными значениями"],
+       criterion:"Критерий приёмки: измеренные значения не хуже нормативных, протоколы измерений приложены (уточнить пороги)."},
+      {title:"Акт приёмки",
+       body:["Оформление акта на скрытые работы (муфты, вводы)","Оформление акта приёмки линии в эксплуатацию","Подписание акта представителями заказчика и подрядчика"],
+       criterion:"Критерий приёмки: акты оформлены и подписаны обеими сторонами, замечания устранены."}
+    ]
+  }
+];
+
+/* ======================= DATA: DEMO ADMIN RESULTS ======================= */
+const DEMO_RESULTS = [
+  {employeeName:"Ким Диана",role:"Мастер участка",date:"2026-03-15",overallScore:100,
+   categoryScores:{"ППР":100,"СТИ":100,"Приёмка кабеля":100,"Охрана труда":100}},
+  {employeeName:"Серикова Айдана",role:"Монтажник СТИ",date:"2026-03-16",overallScore:92,
+   categoryScores:{"ППР":95,"СТИ":90,"Приёмка кабеля":88,"Охрана труда":96}},
+  {employeeName:"Абенов Нурлан",role:"Кабельщик-спайщик",date:"2026-03-17",overallScore:78,
+   categoryScores:{"ППР":80,"СТИ":75,"Приёмка кабеля":82,"Охрана труда":74}},
+  {employeeName:"Тулегенов Ерлан",role:"Электромонтёр",date:"2026-03-18",overallScore:68,
+   categoryScores:{"ППР":70,"СТИ":65,"Приёмка кабеля":60,"Охрана труда":76}},
+  {employeeName:"Жумагулов Асхат",role:"Инженер ПТО",date:"2026-03-19",overallScore:45,
+   categoryScores:{"ППР":50,"СТИ":40,"Приёмка кабеля":42,"Охрана труда":48}}
+];
+
+const STORAGE_KEY = "stiTrainerAttempts";
+
+/* ======================= HELPERS ======================= */
+function statusForScore(score){
+  if(score>=85) return {label:"Отлично",cls:"success"};
+  if(score>=70) return {label:"Хорошо",cls:"success"};
+  if(score>=50) return {label:"Средне",cls:"warning"};
+  return {label:"Повторить",cls:"danger"};
+}
+function progressClassForScore(score){
+  if(score>=70) return "success";
+  if(score>=50) return "warning";
+  return "danger";
+}
+function loadAttempts(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : [];
+  }catch(e){ return []; }
+}
+function saveAttempt(result){
+  const attempts = loadAttempts();
+  attempts.push(result);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(attempts));
+}
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, s => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[s]));
+}
+
+/* ======================= TAB NAVIGATION ======================= */
+const tabButtons = document.querySelectorAll(".tab-btn");
+const views = document.querySelectorAll(".view");
+tabButtons.forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    tabButtons.forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    const target = btn.getAttribute("data-view");
+    views.forEach(v=>v.classList.toggle("active", v.id === "view-"+target));
+    if(target === "admin") renderAdminPanel();
+  });
+});
+
+/* ======================= QUIZ MODULE ======================= */
+const setupCategorySelect = document.getElementById("setup-category");
+CATEGORIES.forEach(cat=>{
+  const opt = document.createElement("option");
+  opt.value = cat; opt.textContent = cat;
+  setupCategorySelect.appendChild(opt);
+});
+
+let quizMode = "training";
+document.querySelectorAll(".mode-btn").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    document.querySelectorAll(".mode-btn").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    quizMode = btn.getAttribute("data-mode");
+  });
+});
+
+let quizState = null;
+
+document.getElementById("start-quiz-btn").addEventListener("click", startQuiz);
+document.getElementById("quiz-next-btn").addEventListener("click", onQuizNext);
+document.getElementById("res-restart-btn").addEventListener("click", resetQuizToSetup);
+
+function startQuiz(){
+  const category = setupCategorySelect.value;
+  const difficulty = document.getElementById("setup-difficulty").value;
+  const count = parseInt(document.getElementById("setup-count").value, 10);
+
+  let pool = QUESTION_BANK.filter(q=>{
+    return (category==="all" || q.category===category) && (difficulty==="all" || q.difficulty===difficulty);
+  });
+  pool = shuffle(pool);
+  if(pool.length === 0){
+    document.getElementById("setup-info").textContent = "Нет вопросов для выбранных фильтров. Измените категорию или сложность.";
+    return;
+  }
+  pool = pool.slice(0, Math.min(count, pool.length));
+
+  quizState = {
+    name: document.getElementById("setup-name").value.trim() || "Гость",
+    role: document.getElementById("setup-role").value.trim() || "Не указана",
+    mode: quizMode,
+    questions: pool,
+    index: 0,
+    correctCount: 0,
+    answers: [], // {question, selected:[], isCorrect}
+    selected: []
+  };
+
+  document.getElementById("quiz-setup").classList.add("hidden");
+  document.getElementById("quiz-results").classList.add("hidden");
+  document.getElementById("quiz-running").classList.remove("hidden");
+  renderQuestion();
+}
+
+function renderQuestion(){
+  const q = quizState.questions[quizState.index];
+  quizState.selected = [];
+
+  document.getElementById("quiz-progress-label").textContent =
+    `Вопрос ${quizState.index+1} из ${quizState.questions.length}`;
+  document.getElementById("quiz-score-label").textContent =
+    `✔ ${quizState.correctCount}  ✘ ${quizState.index - quizState.correctCount}`;
+  const pct = Math.round((quizState.index)/quizState.questions.length*100);
+  document.getElementById("quiz-progress-bar").style.width = pct+"%";
+
+  document.getElementById("quiz-cat-chip").textContent = q.category;
+  document.getElementById("quiz-diff-chip").textContent = q.difficulty;
+  document.getElementById("quiz-question-text").textContent = q.question;
+
+  const optionsWrap = document.getElementById("quiz-options");
+  optionsWrap.innerHTML = "";
+  q.options.forEach((optText, idx)=>{
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "option-btn";
+    btn.textContent = optText;
+    btn.addEventListener("click", ()=> toggleOption(idx, btn, q));
+    optionsWrap.appendChild(btn);
+  });
+
+  document.getElementById("quiz-explain").classList.add("hidden");
+  const nextBtn = document.getElementById("quiz-next-btn");
+  nextBtn.textContent = "Ответить";
+  nextBtn.dataset.state = "answering";
+}
+
+function toggleOption(idx, btn, q){
+  if(document.getElementById("quiz-next-btn").dataset.state === "revealed") return;
+  const isMultiple = q.type === "multiple";
+  if(!isMultiple){
+    document.querySelectorAll("#quiz-options .option-btn").forEach(b=>b.classList.remove("selected"));
+    quizState.selected = [idx];
+    btn.classList.add("selected");
+  }else{
+    const pos = quizState.selected.indexOf(idx);
+    if(pos>=0){ quizState.selected.splice(pos,1); btn.classList.remove("selected"); }
+    else{ quizState.selected.push(idx); btn.classList.add("selected"); }
+  }
+}
+
+function onQuizNext(){
+  const nextBtn = document.getElementById("quiz-next-btn");
+  const q = quizState.questions[quizState.index];
+
+  if(nextBtn.dataset.state === "answering"){
+    if(quizState.selected.length === 0) return;
+    const correctSet = q.correctAnswers.slice().sort().join(",");
+    const selectedSet = quizState.selected.slice().sort().join(",");
+    const isCorrect = correctSet === selectedSet;
+    if(isCorrect) quizState.correctCount++;
+
+    quizState.answers.push({question:q, selected:quizState.selected.slice(), isCorrect});
+
+    if(quizState.mode === "training"){
+      document.querySelectorAll("#quiz-options .option-btn").forEach((b,idx)=>{
+        b.disabled = true;
+        if(q.correctAnswers.includes(idx)) b.classList.add("correct");
+        else if(quizState.selected.includes(idx)) b.classList.add("incorrect");
+      });
+      const explainBox = document.getElementById("quiz-explain");
+      explainBox.textContent = (isCorrect ? "Верно! " : "Неверно. ") + q.explanation;
+      explainBox.classList.remove("hidden");
+      nextBtn.textContent = (quizState.index === quizState.questions.length-1) ? "Завершить тест" : "Следующий вопрос";
+      nextBtn.dataset.state = "revealed";
+    }else{
+      advanceOrFinish();
+    }
+  }else{
+    advanceOrFinish();
+  }
+}
+
+function advanceOrFinish(){
+  quizState.index++;
+  if(quizState.index >= quizState.questions.length){
+    finishQuiz();
+  }else{
+    renderQuestion();
+  }
+}
+
+function finishQuiz(){
+  document.getElementById("quiz-running").classList.add("hidden");
+  document.getElementById("quiz-results").classList.remove("hidden");
+
+  const total = quizState.questions.length;
+  const overall = Math.round((quizState.correctCount/total)*100);
+  const status = statusForScore(overall);
+
+  document.getElementById("res-overall").textContent = overall+"%";
+  document.getElementById("res-status").innerHTML = `<span class="chip ${status.cls}">${status.label}</span>`;
+  document.getElementById("res-correct").textContent = `${quizState.correctCount}/${total}`;
+
+  // Category breakdown
+  const catTally = {};
+  quizState.answers.forEach(a=>{
+    const cat = a.question.category;
+    if(!catTally[cat]) catTally[cat] = {correct:0, total:0};
+    catTally[cat].total++;
+    if(a.isCorrect) catTally[cat].correct++;
+  });
+  const catWrap = document.getElementById("res-categories");
+  catWrap.innerHTML = "";
+  const categoryScores = {};
+  Object.keys(catTally).forEach(cat=>{
+    const t = catTally[cat];
+    const pct = Math.round((t.correct/t.total)*100);
+    categoryScores[cat] = pct;
+    const row = document.createElement("div");
+    row.className = "cat-row";
+    row.innerHTML = `
+      <div class="cat-head"><span>${cat}</span><span>${t.correct}/${t.total} (${pct}%)</span></div>
+      <div class="progress-outer"><div class="progress-inner ${progressClassForScore(pct)}" style="width:${pct}%"></div></div>
+    `;
+    catWrap.appendChild(row);
+  });
+
+  // Mistakes
+  const mistakesWrap = document.getElementById("res-mistakes");
+  mistakesWrap.innerHTML = "";
+  const mistakes = quizState.answers.filter(a=>!a.isCorrect);
+  if(mistakes.length === 0){
+    mistakesWrap.innerHTML = `<p class="muted">Ошибок нет — отличный результат!</p>`;
+  }else{
+    mistakes.forEach(a=>{
+      const box = document.createElement("div");
+      box.className = "explain-box";
+      box.style.marginBottom = "10px";
+      const correctText = a.question.correctAnswers.map(i=>a.question.options[i]).join(", ");
+      box.innerHTML = `<strong>${escapeHtml(a.question.question)}</strong><br>
+        Правильный ответ: ${escapeHtml(correctText)}<br>
+        ${escapeHtml(a.question.explanation)}`;
+      mistakesWrap.appendChild(box);
+    });
+  }
+
+  saveAttempt({
+    employeeName: quizState.name,
+    role: quizState.role,
+    date: new Date().toISOString().slice(0,10),
+    overallScore: overall,
+    categoryScores: categoryScores
+  });
+}
+
+function resetQuizToSetup(){
+  document.getElementById("quiz-results").classList.add("hidden");
+  document.getElementById("quiz-setup").classList.remove("hidden");
+  document.getElementById("setup-info").textContent = "";
+}
+
+/* ======================= SCHEME MODULE ======================= */
+const schemeTabsWrap = document.getElementById("scheme-object-tabs");
+const schemeContentWrap = document.getElementById("scheme-content");
+let activeSchemeId = SCHEME_OBJECTS[0].id;
+
+SCHEME_OBJECTS.forEach(obj=>{
+  const btn = document.createElement("button");
+  btn.textContent = obj.title;
+  btn.className = obj.id === activeSchemeId ? "active" : "";
+  btn.addEventListener("click", ()=>{
+    activeSchemeId = obj.id;
+    schemeTabsWrap.querySelectorAll("button").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    renderScheme();
+  });
+  schemeTabsWrap.appendChild(btn);
+});
+
+function renderScheme(){
+  const obj = SCHEME_OBJECTS.find(o=>o.id===activeSchemeId);
+  schemeContentWrap.innerHTML = "";
+
+  if(obj.type === "stages"){
+    const wrap = document.createElement("div");
+    obj.stages.forEach((stage, idx)=>{
+      const item = document.createElement("div");
+      item.className = "accordion-item";
+      item.innerHTML = `
+        <div class="accordion-head">
+          <span><span class="stage-num">${idx+1}</span>${escapeHtml(stage.title)}</span>
+          <span class="chip-toggle">▾</span>
+        </div>
+        <div class="accordion-body">
+          <ul>${stage.body.map(b=>`<li>${escapeHtml(b)}</li>`).join("")}</ul>
+          <p><strong>${escapeHtml(stage.criterion)}</strong></p>
+        </div>
+      `;
+      item.querySelector(".accordion-head").addEventListener("click", ()=>{
+        item.classList.toggle("open");
+      });
+      wrap.appendChild(item);
+    });
+    schemeContentWrap.appendChild(wrap);
+    return;
+  }
+
+  // SVG type
+  const layout = document.createElement("div");
+  layout.className = "scheme-layout has-detail";
+
+  const left = document.createElement("div");
+  const [vx,vy,vw,vh] = obj.svgViewBox.split(" ").map(Number);
+  let markersSvg = "";
+  obj.markers.forEach((m, idx)=>{
+    markersSvg += `<circle class="marker" data-idx="${idx}" cx="${m.x}" cy="${m.y}" r="16"></circle>
+                   <text class="marker-text" x="${m.x}" y="${m.y+4}" text-anchor="middle" style="pointer-events:none;">${idx+1}</text>`;
+  });
+  left.innerHTML = `
+    <svg class="scheme-svg" viewBox="${obj.svgViewBox}" xmlns="http://www.w3.org/2000/svg">
+      ${obj.svgBody}
+      ${markersSvg}
+    </svg>
+    <ul class="marker-list">
+      ${obj.markers.map((m,idx)=>`<li><button data-idx="${idx}"><span class="marker-num">${idx+1}</span>${escapeHtml(m.label)}</button></li>`).join("")}
+    </ul>
+  `;
+
+  const right = document.createElement("div");
+  right.innerHTML = `<div class="detail-card" id="scheme-detail"><p class="muted">Выберите узел на схеме или в списке слева, чтобы увидеть подробности.</p></div>`;
+
+  layout.appendChild(left);
+  layout.appendChild(right);
+  schemeContentWrap.appendChild(layout);
+
+  function selectMarker(idx){
+    const m = obj.markers[idx];
+    left.querySelectorAll("circle.marker").forEach(c=>c.classList.remove("active"));
+    left.querySelectorAll(`circle.marker[data-idx="${idx}"]`).forEach(c=>c.classList.add("active"));
+    left.querySelectorAll(".marker-list button").forEach(b=>b.classList.remove("active"));
+    left.querySelectorAll(`.marker-list button[data-idx="${idx}"]`).forEach(b=>b.classList.add("active"));
+
+    document.getElementById("scheme-detail").innerHTML = `
+      <h4>${idx+1}. ${escapeHtml(m.label)}</h4>
+      <div class="kv"><div class="k">Что проверять</div><div class="v">${escapeHtml(m.check)}</div></div>
+      <div class="kv"><div class="k">Типичные дефекты</div><div class="v">${escapeHtml(m.defect)}</div></div>
+      <div class="kv"><div class="k">Норматив</div><div class="v muted">${escapeHtml(m.norm)}</div></div>
+    `;
+  }
+
+  left.querySelectorAll("circle.marker").forEach(c=>{
+    c.addEventListener("click", ()=> selectMarker(parseInt(c.getAttribute("data-idx"),10)));
+  });
+  left.querySelectorAll(".marker-list button").forEach(b=>{
+    b.addEventListener("click", ()=> selectMarker(parseInt(b.getAttribute("data-idx"),10)));
+  });
+}
+renderScheme();
+
+/* ======================= ADMIN MODULE ======================= */
+function getAllResults(){
+  return DEMO_RESULTS.concat(loadAttempts());
+}
+
+function renderAdminPanel(){
+  const results = getAllResults();
+  const total = results.length;
+  const avg = total ? Math.round(results.reduce((s,r)=>s+r.overallScore,0)/total) : 0;
+  const belowThreshold = results.filter(r=>r.overallScore < 70).length;
+
+  document.getElementById("admin-metrics").innerHTML = `
+    <div class="metric-card"><div class="value">${total}</div><div class="label">Прошли тестирование</div></div>
+    <div class="metric-card"><div class="value">${avg}%</div><div class="label">Средний балл</div></div>
+    <div class="metric-card"><div class="value">${belowThreshold}</div><div class="label">Ниже порога (70%)</div></div>
+  `;
+
+  const tbody = document.getElementById("admin-table-body");
+  tbody.innerHTML = "";
+  results
+    .slice()
+    .sort((a,b)=> (b.date||"").localeCompare(a.date||""))
+    .forEach((r, idx)=>{
+      const status = statusForScore(r.overallScore);
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${escapeHtml(r.employeeName)}</td>
+        <td>${escapeHtml(r.role)}</td>
+        <td>${escapeHtml(r.date)}</td>
+        <td>${r.overallScore}%</td>
+        <td><span class="chip ${status.cls}">${status.label}</span></td>
+      `;
+      tr.addEventListener("click", ()=> showAdminDetail(r));
+      tbody.appendChild(tr);
+    });
+
+  document.getElementById("admin-detail-card").classList.add("hidden");
+}
+
+function showAdminDetail(r){
+  const card = document.getElementById("admin-detail-card");
+  card.classList.remove("hidden");
+  document.getElementById("admin-detail-name").textContent = `${r.employeeName} — ${r.role} (${r.date})`;
+  const body = document.getElementById("admin-detail-body");
+  body.innerHTML = "";
+  Object.keys(r.categoryScores).forEach(cat=>{
+    const pct = r.categoryScores[cat];
+    const row = document.createElement("div");
+    row.className = "cat-row";
+    row.innerHTML = `
+      <div class="cat-head"><span>${escapeHtml(cat)}</span><span>${pct}%</span></div>
+      <div class="progress-outer"><div class="progress-inner ${progressClassForScore(pct)}" style="width:${pct}%"></div></div>
+    `;
+    body.appendChild(row);
+  });
+  card.scrollIntoView({behavior:"smooth", block:"nearest"});
+}
+
+document.getElementById("admin-export-btn").addEventListener("click", ()=>{
+  const results = getAllResults();
+  const header = ["ФИО","Должность","Дата","Итог (%)","Статус","ППР","СТИ","Приёмка кабеля","Охрана труда"];
+  const rows = results.map(r=>{
+    const status = statusForScore(r.overallScore).label;
+    return [
+      r.employeeName, r.role, r.date, r.overallScore, status,
+      r.categoryScores["ППР"] ?? "",
+      r.categoryScores["СТИ"] ?? "",
+      r.categoryScores["Приёмка кабеля"] ?? "",
+      r.categoryScores["Охрана труда"] ?? ""
+    ];
+  });
+  const csvLines = [header].concat(rows).map(line =>
+    line.map(v => `"${String(v).replace(/"/g,'""')}"`).join(";")
+  );
+  const csvContent = "﻿" + csvLines.join("\r\n");
+  const blob = new Blob([csvContent], {type:"text/csv;charset=utf-8;"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "sti_ppr_results.csv";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
+
+renderAdminPanel();
+
+})();
+</script>
+</body>
+</html>
